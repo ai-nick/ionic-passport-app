@@ -1,25 +1,69 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { NgForm } from '@angular/forms';
+import { AlertController, LoadingController, IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the LoginPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { Events } from 'ionic-angular';
+
+import { UserOptions } from '../../interfaces/user-options';
+
+import { UserServiceProvider } from '../../providers/user-service';
+
+import { HomePage } from '../home/home';
 
 @IonicPage()
 @Component({
-  selector: 'page-login',
-  templateUrl: 'login.html',
+	selector: 'page-login',
+	templateUrl: 'login.html',
 })
 export class LoginPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+	
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
-  }
+	login: UserOptions = { username: '', password: '' };
+
+	submitted = false;
+
+	constructor(
+		public userService: UserServiceProvider,
+		public navCtrl: NavController,
+		public events: Events,
+		public navParams: NavParams,
+		private alertCtrl: AlertController,
+		private loadingCtrl: LoadingController) {
+
+		// ...
+	}
+
+	onLogin(form: NgForm) {
+		this.submitted = true;
+
+		if (form.valid) {
+
+			let loading = this.loadingCtrl.create({});
+			loading.present();
+
+			this.userService.login(this.login).subscribe(data => {
+					this.events.publish('user:login');
+					loading.dismiss();
+					this.navCtrl.setRoot(HomePage);
+				},
+				error => {
+					loading.dismiss();
+					this.showError(error);
+			});
+			
+		}
+	}
+
+	showError(error) {
+		console.log(error);
+		let alert = this.alertCtrl.create({
+			title: 'Error',
+			// message: error.json().message,
+			message: 'Wrong user or password',
+			buttons: ['OK']
+		});
+		alert.present();
+	}
 
 }
