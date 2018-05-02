@@ -1,25 +1,45 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { AlertController, LoadingController, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the AccountPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import { UserServiceProvider } from '../../providers/user-service';
 
 @IonicPage()
 @Component({
-  selector: 'page-account',
-  templateUrl: 'account.html',
+	selector: 'page-account',
+	templateUrl: 'account.html',
 })
 export class AccountPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+	user = {};
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad AccountPage');
-  }
+	constructor(
+		public userService: UserServiceProvider,
+		public navCtrl: NavController,
+		public events: Events,
+		public navParams: NavParams,
+		private alertCtrl: AlertController,
+		private loadingCtrl: LoadingController) {
+
+		this.getUser();
+	}
+
+	ionViewDidLoad() {
+		console.log('ionViewDidLoad AccountPage');
+	}
+
+	getUser() {
+
+		let loading = this.loadingCtrl.create({});
+		loading.present();
+
+		this.userService.getUser().subscribe(data => {
+				this.user = data;
+				loading.dismiss();
+			},
+			error => {
+				loading.dismiss();
+				console.log(error);
+		});
+	}
 
 }

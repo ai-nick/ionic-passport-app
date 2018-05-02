@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AlertController, LoadingController, IonicPage, NavController, NavParams } from 'ionic-angular';
-
-import { Events } from 'ionic-angular';
+import { AlertController, LoadingController, Events, IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { UserOptions } from '../../interfaces/user-options';
 
@@ -17,11 +15,7 @@ import { HomePage } from '../home/home';
 })
 export class LoginPage {
 
-	
-
-	login: UserOptions = { username: '', password: '' };
-
-	submitted = false;
+	login: UserOptions = { email: '', password: '' };
 
 	constructor(
 		public userService: UserServiceProvider,
@@ -35,7 +29,6 @@ export class LoginPage {
 	}
 
 	onLogin(form: NgForm) {
-		this.submitted = true;
 
 		if (form.valid) {
 

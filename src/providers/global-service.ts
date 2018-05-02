@@ -7,6 +7,6 @@ export class GlobalServiceProvider {
 	apiUrl = 'http://localhost:8000/api';
 
 	constructor(public http: Http) {
-		console.log('Hello GlobalServiceProvider Provider');
+		
 	}
 }

@@ -23,16 +23,12 @@ export class UserServiceProvider {
 		private http: Http,
 		public storage: Storage,
 		public authHttp: HttpClient) {
-		console.log('Hello UserServiceProvider Provider');
 	}
 
 	login(login: {}) {
-
-		console.log(this.global.apiUrl+this.authProvider.loginUrl);
 		return this.http.post(this.global.apiUrl+this.authProvider.loginUrl, login)
 		.map(response => response.json())
 		.map(data => {
-			console.log('userSP@login');
 			this.setAuth(data);
 			this.getUser();
 			return data.token;
@@ -40,25 +36,48 @@ export class UserServiceProvider {
 	};
 
 	private setAuth(data) {
-		return this.storage.set('token', JSON.stringify(data));
+		return this.storage.set('token', data.access_token);
 	}
 
 	getUser() {
 
-		this.authHttp.get(this.global.apiUrl+'/user')
-		.subscribe(data => {
-			console.log(data);
-			this.setUser(data);
-			return data;
-		}, err => console.log(err));
-		
+		// this.http.get('https://api.github.com/users')
+        // .subscribe(response => console.log(response));
+
+        return this.authHttp.get(this.global.apiUrl+'/user'); 
+
+
+		// return this.authHttp.get(this.global.apiUrl+'/user')
+		// .map(response => response)
+		// .map(data => {
+		// 	this.setUser(data);
+		// 	return data;
+		// });		
 	};
 
 	getToken() {
 		return this.storage.get('token').then((val) => {
-			let token = JSON.parse(val);
-		});        	
+			return val;
+		});  
 	};
+
+	// getAccessToken() {
+	// 	this.getToken().then((val) => {
+	// 		let token = JSON.parse(val).access_token;
+	// 		return token;
+	// 	});        	
+	// };
+
+	// return this.http.get(this.url)
+ //    .do(this.logResponse)
+ //    .map(this.extractData)
+ //    .do(this.logResponse)
+ //    .catch(this.catchError)
+ //    .subscribe(
+ //      resultado => this.messages = resultado, // En this.messages se guardará el 
+ //                                              // resultado de extractData()
+ //      error => console.log(error)
+ //    )
 
 	private setUser(data) {
 		return this.storage.set('user', data);
@@ -71,6 +90,17 @@ export class UserServiceProvider {
 			}
 			return false;
 		});
+	};
+
+	register(login: {}) {
+
+		return this.http.post(this.global.apiUrl+this.authProvider.registerUrl, login)
+		.map(response => response.json())
+		.map(data => {
+			this.setAuth(data);
+			this.getUser();
+			return data.token;
+		});		
 	};
 
 	logout(): void {
